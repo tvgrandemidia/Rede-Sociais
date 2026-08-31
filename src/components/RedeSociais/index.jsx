@@ -50,7 +50,7 @@ function Rede() {
         </a>
 
         <a
-          href="#"
+          href="https://api.whatsapp.com/qr/V7FDFMCXGNJKJ1?autoload=1&app_absent=0"
           target="_blank"
           rel="noopener noreferrer"
         >
