@@ -1,0 +1,227 @@
+.container {
+  position: relative;
+
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  color: white;
+
+  overflow-x: hidden;
+
+  background: #111;
+}
+
+
+/* =========================
+   FUNDO DO CANVA
+   ========================= */
+
+.fundo {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  z-index: 0;
+
+  overflow: hidden;
+
+  pointer-events: none;
+}
+
+.fundo img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: top center;
+}
+
+
+/* =========================
+   PERFIL
+   ========================= */
+
+.perfil {
+  position: relative;
+
+  z-index: 1;
+
+  width: 100%;
+
+  text-align: center;
+
+  margin-bottom: 30px;
+}
+
+.logo {
+  width: 90px;
+  height: 90px;
+
+  margin: 0 auto 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: white;
+  color: #111827;
+
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.perfil h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.perfil p {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+
+/* =========================
+   LINKS
+   ========================= */
+
+.links {
+  position: relative;
+
+  z-index: 1;
+
+  width: 100%;
+  max-width: 500px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 15px;
+}
+
+.links a {
+  width: 100%;
+
+  padding: 18px 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: white;
+  color: #111827;
+
+  text-decoration: none;
+
+  font-size: 17px;
+  font-weight: bold;
+
+  transition: 0.3s;
+}
+
+.links a:hover {
+  transform: translateY(-3px);
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+
+/* =========================
+   RODAPÉ
+   ========================= */
+
+footer {
+  position: relative;
+
+  z-index: 1;
+
+  margin-top: 40px;
+
+  font-size: 13px;
+
+  opacity: 0.6;
+}
+
+
+/* =========================
+   CELULAR
+   ========================= */
+
+@media (max-width: 768px) {
+
+  .container {
+    padding: 30px 15px;
+  }
+
+  .links {
+    width: 85%;
+    max-width: 400px;
+  }
+
+  .links a {
+    padding: 16px;
+
+    font-size: 16px;
+  }
+}
+
+
+/* =========================
+   TELAS MUITO PEQUENAS
+   ========================= */
+
+@media (max-width: 307px) {
+
+  .container {
+    padding: 20px 10px;
+  }
+
+  .perfil {
+    margin-bottom: 20px;
+  }
+
+  .logo {
+    width: 70px;
+    height: 70px;
+
+    font-size: 18px;
+  }
+
+  .perfil h1 {
+    font-size: 22px;
+  }
+
+  .perfil p {
+    font-size: 14px;
+  }
+
+  .links {
+    width: 92%;
+
+    gap: 10px;
+  }
+
+  .links a {
+    padding: 13px;
+
+    font-size: 14px;
+  }
+
+  footer {
+    margin-top: 25px;
+  }
+}
