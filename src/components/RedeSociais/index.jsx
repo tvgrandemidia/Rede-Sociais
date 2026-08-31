@@ -58,7 +58,7 @@ function Rede() {
         </a>
 
         <a
-          href="#"
+          href="https://www.youtube.com/@tv.grandemidia"
           target="_blank"
           rel="noopener noreferrer"
         >
