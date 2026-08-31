@@ -1,227 +1,522 @@
-.container {
-  position: relative;
+ * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  width: 100%;
-  min-height: 100vh;
+        :root {
+            --azul: #087cff;
+            --azul-claro: #20a5ff;
+            --azul-escuro: #003b91;
+            --branco: #ffffff;
+            --preto: #020307;
+            --cinza: #9baec3;
+        }
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
 
-  color: white;
+            background:
+                radial-gradient(
+                    circle at 50% 15%,
+                    rgba(0, 119, 255, 0.25),
+                    transparent 35%
+                ),
 
-  overflow-x: hidden;
+                radial-gradient(
+                    circle at 10% 90%,
+                    rgba(0, 119, 255, 0.12),
+                    transparent 30%
+                ),
 
-  background: #111;
-}
+                linear-gradient(
+                    145deg,
+                    #010205,
+                    #071525,
+                    #010205
+                );
 
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-/* =========================
-   FUNDO DO CANVA
-   ========================= */
+            padding: 30px 15px;
 
-.fundo {
-  position: absolute;
+            overflow-x: hidden;
+        }
 
-  top: 0;
-  left: 0;
 
-  width: 100%;
-  height: 100%;
+        /* Efeito de grade no fundo */
 
-  z-index: 0;
+        body::before {
 
-  overflow: hidden;
+            content: "";
 
-  pointer-events: none;
-}
+            position: fixed;
 
-.fundo img {
-  display: block;
+            inset: 0;
 
-  width: 100%;
-  height: 100%;
+            pointer-events: none;
 
-  object-fit: cover;
-  object-position: top center;
-}
+            background:
 
+                linear-gradient(
+                    rgba(255,255,255,0.015) 1px,
+                    transparent 1px
+                ),
 
-/* =========================
-   PERFIL
-   ========================= */
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.015) 1px,
+                    transparent 1px
+                );
 
-.perfil {
-  position: relative;
+            background-size: 35px 35px;
+        }
 
-  z-index: 1;
 
-  width: 100%;
+        .container {
 
-  text-align: center;
+            width: 100%;
 
-  margin-bottom: 30px;
-}
+            max-width: 750px;
 
-.logo {
-  width: 90px;
-  height: 90px;
+            text-align: center;
 
-  margin: 0 auto 15px;
+            position: relative;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+            z-index: 2;
+        }
 
-  border-radius: 50%;
 
-  background: white;
-  color: #111827;
+        /* LOGOMARCA */
 
-  font-size: 22px;
-  font-weight: bold;
-}
+        .logo {
 
-.perfil h1 {
-  font-size: 28px;
-  margin-bottom: 8px;
-}
+            width: 300px;
 
-.perfil p {
-  font-size: 16px;
-  opacity: 0.8;
-}
+            max-width: 80%;
 
+            margin: 0 auto 15px;
 
-/* =========================
-   LINKS
-   ========================= */
+            filter:
+                drop-shadow(
+                    0 0 25px
+                    rgba(0, 132, 255, .35)
+                );
 
-.links {
-  position: relative;
+            animation:
+                flutuar 4s
+                ease-in-out
+                infinite;
+        }
 
-  z-index: 1;
 
-  width: 100%;
-  max-width: 500px;
+        .logo img {
 
-  display: flex;
-  flex-direction: column;
+            width: 100%;
 
-  gap: 15px;
-}
+            display: block;
 
-.links a {
-  width: 100%;
+            border-radius: 20px;
+        }
 
-  padding: 18px 20px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+        /* TÍTULO */
 
-  border-radius: 12px;
+        h1 {
 
-  background: white;
-  color: #111827;
+            font-size: 45px;
 
-  text-decoration: none;
+            font-weight: 800;
 
-  font-size: 17px;
-  font-weight: bold;
+            letter-spacing: 1px;
 
-  transition: 0.3s;
-}
+            margin-bottom: 8px;
+        }
 
-.links a:hover {
-  transform: translateY(-3px);
 
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-}
+        .subtitulo {
 
+            color: #b8c7d9;
 
-/* =========================
-   RODAPÉ
-   ========================= */
+            font-size: 17px;
 
-footer {
-  position: relative;
+            margin-bottom: 30px;
+        }
 
-  z-index: 1;
 
-  margin-top: 40px;
+        /* ÁREA DOS BOTÕES */
 
-  font-size: 13px;
+        .redes {
 
-  opacity: 0.6;
-}
+            display: grid;
 
+            grid-template-columns:
+                repeat(2, 1fr);
 
-/* =========================
-   CELULAR
-   ========================= */
+            gap: 15px;
 
-@media (max-width: 768px) {
+            max-width: 620px;
 
-  .container {
-    padding: 30px 15px;
-  }
+            margin: auto;
+        }
 
-  .links {
-    width: 85%;
-    max-width: 400px;
-  }
 
-  .links a {
-    padding: 16px;
+        /* BOTÕES */
 
-    font-size: 16px;
-  }
-}
+        .botao {
 
+            min-height: 75px;
 
-/* =========================
-   TELAS MUITO PEQUENAS
-   ========================= */
+            display: flex;
 
-@media (max-width: 307px) {
+            align-items: center;
 
-  .container {
-    padding: 20px 10px;
-  }
+            text-decoration: none;
 
-  .perfil {
-    margin-bottom: 20px;
-  }
+            color: white;
 
-  .logo {
-    width: 70px;
-    height: 70px;
+            padding: 14px 17px;
 
-    font-size: 18px;
-  }
+            border-radius: 18px;
 
-  .perfil h1 {
-    font-size: 22px;
-  }
+            border:
+                1px solid
+                rgba(35,143,255,.30);
 
-  .perfil p {
-    font-size: 14px;
-  }
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(13,28,48,.95),
+                    rgba(4,10,19,.95)
+                );
 
-  .links {
-    width: 92%;
+            box-shadow:
 
-    gap: 10px;
-  }
+                0 12px 30px
+                rgba(0,0,0,.30),
 
-  .links a {
-    padding: 13px;
+                inset
+                0 1px
+                rgba(255,255,255,.05);
 
-    font-size: 14px;
-  }
+            transition:
+                .25s ease;
 
-  footer {
-    margin-top: 25px;
-  }
-}
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        /* Brilho passando */
+
+        .botao::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 100px;
+
+            height: 200%;
+
+            background:
+                rgba(255,255,255,.04);
+
+            transform:
+                rotate(25deg);
+
+            left: -150px;
+
+            transition: .5s;
+        }
+
+
+        .botao:hover::before {
+
+            left: 110%;
+        }
+
+
+        .botao:hover {
+
+            transform:
+                translateY(-5px);
+
+            border-color:
+                rgba(35,158,255,.8);
+
+            box-shadow:
+
+                0 15px 40px
+                rgba(0,105,255,.20),
+
+                0 0 25px
+                rgba(0,132,255,.15);
+        }
+
+
+        /* ÍCONE */
+
+        .icone {
+
+            width: 46px;
+
+            height: 46px;
+
+            min-width: 46px;
+
+            border-radius: 14px;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 21px;
+
+            font-weight: bold;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #0b86ff,
+                    #004cb8
+                );
+
+            box-shadow:
+                0 0 20px
+                rgba(0,128,255,.25);
+
+            margin-right: 15px;
+        }
+
+
+        .texto {
+
+            text-align: left;
+        }
+
+
+        .texto strong {
+
+            display: block;
+
+            font-size: 17px;
+        }
+
+
+        .texto small {
+
+            display: block;
+
+            margin-top: 4px;
+
+            color: #8ea4bd;
+
+            font-size: 12px;
+        }
+
+
+        .seta {
+
+            margin-left: auto;
+
+            font-size: 26px;
+
+            color: #58b6ff;
+
+            transition: .25s;
+        }
+
+
+        .botao:hover .seta {
+
+            transform:
+                translateX(5px);
+        }
+
+
+        /* BOTÃO AO VIVO */
+
+        .ao-vivo {
+
+            max-width: 620px;
+
+            margin:
+                25px auto 0;
+
+            padding: 18px 20px;
+
+            border-radius: 18px;
+
+            border:
+                1px solid
+                rgba(0,143,255,.4);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(0,119,255,.15),
+                    rgba(255,255,255,.03)
+                );
+
+            display: flex;
+
+            align-items: center;
+
+            text-align: left;
+
+            text-decoration: none;
+
+            color: white;
+
+            transition: .25s;
+        }
+
+
+        .ao-vivo:hover {
+
+            transform:
+                translateY(-3px);
+
+            border-color:
+                #168fff;
+        }
+
+
+        .bolinha {
+
+            width: 12px;
+
+            height: 12px;
+
+            min-width: 12px;
+
+            border-radius: 50%;
+
+            background:
+                #20a5ff;
+
+            box-shadow:
+                0 0 15px
+                #20a5ff;
+
+            margin-right: 12px;
+
+            animation:
+                pulsar 1.4s
+                infinite;
+        }
+
+
+        .ao-vivo strong {
+
+            font-size: 15px;
+        }
+
+
+        .ao-vivo span {
+
+            display: block;
+
+            color: #9cb0c5;
+
+            font-size: 12px;
+
+            margin-top: 4px;
+        }
+
+
+        .seta-live {
+
+            margin-left: auto;
+
+            color: #58b6ff;
+
+            font-size: 25px;
+        }
+
+
+        /* RODAPÉ */
+
+        footer {
+
+            margin-top: 30px;
+
+            color: #6f8299;
+
+            font-size: 12px;
+        }
+
+
+        /* ANIMAÇÕES */
+
+        @keyframes pulsar {
+
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: .35;
+                transform: scale(.75);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+
+        @keyframes flutuar {
+
+            0%,
+            100% {
+                transform:
+                    translateY(0);
+            }
+
+            50% {
+                transform:
+                    translateY(-5px);
+            }
+        }
+
+
+        /* CELULAR */
+
+        @media (max-width: 560px) {
+
+            body {
+                padding:
+                    25px 15px;
+            }
+
+            .logo {
+                width: 270px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .subtitulo {
+                font-size: 14px;
+            }
+
+            .redes {
+                grid-template-columns: 1fr;
+            }
+
+            .botao {
+                min-height: 70px;
+            }
+        }
