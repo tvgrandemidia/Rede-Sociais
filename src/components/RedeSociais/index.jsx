@@ -1,5 +1,7 @@
 import styles from "./styles.module.css";
 
+import logo from "../../assets/3103415.png";
+
 function App() {
     return (
         <main className={styles.container}>
@@ -8,7 +10,7 @@ function App() {
 
             <div className={styles.logo}>
                 <img
-                    src="/3103415.png"
+                    src={logo}
                     alt="TV Grande Mídia"
                 />
             </div>
@@ -175,7 +177,7 @@ function App() {
 
                 <a
                     className={styles.botao}
-                    href="https://radiogm.com"
+                    href="https://radiogm.com.br/"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
