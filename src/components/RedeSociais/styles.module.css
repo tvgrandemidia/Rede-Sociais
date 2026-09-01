@@ -1,84 +1,16 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-:root {
-    --azul: #087cff;
-    --azul-claro: #20a5ff;
-    --azul-escuro: #003b91;
-    --branco: #ffffff;
-    --preto: #020307;
-    --cinza: #9baec3;
-}
-
-body {
-    min-height: 100vh;
-    font-family: Arial, Helvetica, sans-serif;
-    color: white;
-
-    background:
-        radial-gradient(
-            circle at 50% 15%,
-            rgba(0, 119, 255, 0.25),
-            transparent 35%
-        ),
-        radial-gradient(
-            circle at 10% 90%,
-            rgba(0, 119, 255, 0.12),
-            transparent 30%
-        ),
-        linear-gradient(
-            145deg,
-            #010205,
-            #071525,
-            #010205
-        );
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    padding: 30px 15px;
-
-    overflow-x: hidden;
-}
-
-/* Efeito de grade no fundo */
-
-body::before {
-    content: "";
-
-    position: fixed;
-
-    inset: 0;
-
-    pointer-events: none;
-
-    background:
-        linear-gradient(
-            rgba(255, 255, 255, 0.015) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(255, 255, 255, 0.015) 1px,
-            transparent 1px
-        );
-
-    background-size: 35px 35px;
-}
-
-
-/* CONTAINER */
-
 .container {
     width: 100%;
     max-width: 750px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 30px 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
     text-align: center;
-
+    
     position: relative;
 
     z-index: 2;
@@ -116,7 +48,7 @@ body::before {
 
 /* TÍTULO */
 
-h1 {
+.titulo {
     font-size: 45px;
 
     font-weight: 800;
@@ -141,6 +73,10 @@ h1 {
 /* ÁREA DOS BOTÕES */
 
 .redes {
+    width: 100%;
+
+    max-width: 620px;
+
     display: grid;
 
     grid-template-columns:
@@ -148,9 +84,7 @@ h1 {
 
     gap: 15px;
 
-    max-width: 620px;
-
-    margin: auto;
+    margin: 0 auto;
 }
 
 
@@ -199,7 +133,7 @@ h1 {
 }
 
 
-/* Brilho passando */
+/* BRILHO PASSANDO */
 
 .botao::before {
     content: "";
@@ -321,6 +255,8 @@ h1 {
 /* BOTÃO AO VIVO */
 
 .aoVivo {
+    width: 100%;
+
     max-width: 620px;
 
     margin:
@@ -419,7 +355,7 @@ h1 {
 
 /* RODAPÉ */
 
-footer {
+.footer {
     margin-top: 30px;
 
     color: #6f8299;
@@ -447,7 +383,7 @@ footer {
 
     100% {
         opacity: 1;
-
+        
         transform:
             scale(1);
     }
@@ -470,7 +406,8 @@ footer {
 /* CELULAR */
 
 @media (max-width: 560px) {
-    body {
+
+    .container {
         padding:
             25px 15px;
     }
@@ -479,7 +416,7 @@ footer {
         width: 270px;
     }
 
-    h1 {
+    .titulo {
         font-size: 32px;
     }
 
@@ -496,3 +433,4 @@ footer {
         min-height: 70px;
     }
 }
+

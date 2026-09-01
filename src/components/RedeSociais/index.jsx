@@ -2,7 +2,7 @@ import styles from "./styles.module.css";
 
 import logo from "../../assets/3103415.png";
 
-function App() {
+function RedeSociais() {
     return (
         <main className={styles.container}>
 
@@ -240,4 +240,4 @@ function App() {
     );
 }
 
-export default App;
+export default RedeSociais;

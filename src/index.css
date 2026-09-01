@@ -1,17 +1,76 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --azul: #087cff;
+    --azul-claro: #20a5ff;
+    --azul-escuro: #003b91;
+    --branco: #ffffff;
+    --preto: #020307;
+    --cinza: #9baec3;
 }
 
 html,
 body,
 #root {
-  width: 100%;
-  min-height: 100%;
+    width: 100%;
+    min-height: 100%;
 }
 
 body {
-  margin: 0;
-  overflow-x: hidden;
+    min-height: 100vh;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    color: white;
+
+    background:
+        radial-gradient(
+            circle at 50% 15%,
+            rgba(0, 119, 255, 0.25),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 10% 90%,
+            rgba(0, 119, 255, 0.12),
+            transparent 30%
+        ),
+        linear-gradient(
+            145deg,
+            #010205,
+            #071525,
+            #010205
+        );
+
+    overflow-x: hidden;
 }
+
+
+/* EFEITO DE GRADE NO FUNDO */
+
+body::before {
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            rgba(255, 255, 255, 0.015) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.015) 1px,
+            transparent 1px
+        );
+
+    background-size: 35px 35px;
+}
+
