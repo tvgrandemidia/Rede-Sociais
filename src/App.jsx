@@ -14,7 +14,17 @@ function App() {
     return <Privacidade />;
   }
 
+  if (caminho === "/auth/tiktok/callback") {
+    return (
+      <div>
+        <h1>Autorização do TikTok</h1>
+        <p>Retorno da autorização recebido.</p>
+      </div>
+    );
+  }
+
   return <RedeSociais />;
 }
 
 export default App;
+
