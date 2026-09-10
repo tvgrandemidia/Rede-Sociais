@@ -49,7 +49,7 @@ export default async function handler(req, res) {
             "https://tvgrandemidia.vercel.app/api/auth/tiktok/callback";
 
         // ==========================================
-        // TROCA DO CODE POR ACCESS TOKEN
+        // 1. TROCA DO CODE POR ACCESS TOKEN
         // ==========================================
 
         const body = new URLSearchParams({
@@ -122,7 +122,7 @@ export default async function handler(req, res) {
         );
 
         // ==========================================
-        // USER.INFO.BASIC
+        // 2. USER.INFO.BASIC
         // ==========================================
 
         const respostaUsuario = await fetch(
@@ -188,7 +188,7 @@ export default async function handler(req, res) {
         );
 
         // ==========================================
-        // CREATOR INFO
+        // 3. CREATOR INFO
         // ==========================================
 
         const respostaCreator = await fetch(
@@ -252,14 +252,117 @@ export default async function handler(req, res) {
         );
 
         // ==========================================
-        // RESPOSTA FINAL
+        // 4. TESTE VIDEO INIT
+        // ==========================================
+
+        console.log(
+            "Iniciando teste video/init..."
+        );
+
+        const respostaVideoInit = await fetch(
+            "https://open.tiktokapis.com/v2/post/publish/video/init/",
+            {
+                method: "POST",
+
+                headers: {
+                    Authorization:
+                        `Bearer ${accessToken}`,
+
+                    "Content-Type":
+                        "application/json; charset=UTF-8"
+                },
+
+                body: JSON.stringify({
+                    post_info: {
+                        title:
+                            "Teste TV Grande Mídia",
+
+                        privacy_level:
+                            "SELF_ONLY",
+
+                        disable_duet: false,
+
+                        disable_comment: false,
+
+                        disable_stitch: false
+                    },
+
+                    source_info: {
+                        source:
+                            "FILE_UPLOAD",
+
+                        video_size:
+                            1000000,
+
+                        chunk_size:
+                            1000000,
+
+                        total_chunk_count:
+                            1
+                    }
+                })
+            }
+        );
+
+        const dadosVideoInit =
+            await respostaVideoInit.json();
+
+        if (
+            !respostaVideoInit.ok ||
+            (
+                dadosVideoInit.error?.code &&
+                dadosVideoInit.error.code !== "ok"
+            )
+        ) {
+            console.error(
+                "ERRO COMPLETO VIDEO.INIT:",
+                JSON.stringify(
+                    dadosVideoInit,
+                    null,
+                    2
+                )
+            );
+
+            return res.status(400).json({
+                sucesso: false,
+
+                etapa: "video.init",
+
+                erro:
+                    dadosVideoInit.error?.code ||
+                    "Erro ao iniciar publicação do vídeo.",
+
+                descricao:
+                    dadosVideoInit.error?.message ||
+                    null,
+
+                resposta_tiktok:
+                    dadosVideoInit
+            });
+        }
+
+        console.log(
+            "video/init executado com sucesso."
+        );
+
+        console.log(
+            "Resposta video/init:",
+            JSON.stringify(
+                dadosVideoInit,
+                null,
+                2
+            )
+        );
+
+        // ==========================================
+        // 5. RESPOSTA FINAL
         // ==========================================
 
         return res.status(200).json({
             sucesso: true,
 
             mensagem:
-                "TikTok autorizado, user.info.basic e creator_info consultados com sucesso.",
+                "TikTok autorizado, user.info.basic, creator_info e video/init executados com sucesso.",
 
             autorizacao: {
                 open_id:
@@ -287,7 +390,10 @@ export default async function handler(req, res) {
             },
 
             creator_info:
-                dadosCreator.data || null
+                dadosCreator.data || null,
+
+            video_init:
+                dadosVideoInit.data || null
         });
 
     } catch (erro) {
@@ -298,9 +404,12 @@ export default async function handler(req, res) {
 
         return res.status(500).json({
             sucesso: false,
+
             etapa: "callback",
+
             erro:
                 "Erro interno no callback do TikTok.",
+
             descricao:
                 erro.message
         });
