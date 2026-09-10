@@ -1,5 +1,12 @@
+import {
+    salvarTokenTikTok
+} from "../../../../src/tiktok/banco.js";
+
+
 export default async function handler(req, res) {
+
     try {
+
         const {
             code,
             state,
@@ -7,30 +14,66 @@ export default async function handler(req, res) {
             error_description
         } = req.query;
 
+
+        // ======================================
+        // ERRO DEVOLVIDO PELO TIKTOK
+        // ======================================
+
         if (error) {
+
             return res.status(400).json({
+
                 sucesso: false,
+
                 erro: error,
+
                 descricao:
                     error_description ||
                     "Erro na autorização do TikTok."
+
             });
+
         }
+
+
+        // ======================================
+        // VERIFICAR CODE
+        // ======================================
 
         if (!code) {
+
             return res.status(400).json({
+
                 sucesso: false,
+
                 erro:
                     "Código de autorização não recebido."
+
             });
+
         }
 
+
+        // ======================================
+        // VERIFICAR STATE
+        // ======================================
+
         if (state !== "tvgrandemidia") {
+
             return res.status(400).json({
+
                 sucesso: false,
+
                 erro: "State inválido."
+
             });
+
         }
+
+
+        // ======================================
+        // CREDENCIAIS
+        // ======================================
 
         const clientKey =
             process.env.TIKTOK_CLIENT_KEY;
@@ -38,44 +81,80 @@ export default async function handler(req, res) {
         const clientSecret =
             process.env.TIKTOK_CLIENT_SECRET;
 
-        if (!clientKey || !clientSecret) {
+
+        if (
+            !clientKey ||
+            !clientSecret
+        ) {
+
             return res.status(500).json({
+
                 sucesso: false,
+
                 erro:
                     "Credenciais do TikTok não configuradas na Vercel."
+
             });
+
         }
+
+
+        // ======================================
+        // REDIRECT URI
+        // ======================================
 
         const redirectUri =
             "https://tvgrandemidia.vercel.app/api/auth/tiktok/callback";
 
+
+        // ======================================
+        // TROCAR CODE POR TOKEN
+        // ======================================
+
         const body = new URLSearchParams({
-            client_key: clientKey,
-            client_secret: clientSecret,
+
+            client_key:
+                clientKey,
+
+            client_secret:
+                clientSecret,
+
             code,
-            grant_type: "authorization_code",
-            redirect_uri: redirectUri
+
+            grant_type:
+                "authorization_code",
+
+            redirect_uri:
+                redirectUri
+
         });
 
-        const respostaToken = await fetch(
-            "https://open.tiktokapis.com/v2/oauth/token/",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type":
-                        "application/x-www-form-urlencoded"
-                },
-                body
-            }
-        );
+
+        const respostaToken =
+            await fetch(
+                "https://open.tiktokapis.com/v2/oauth/token/",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/x-www-form-urlencoded"
+                    },
+
+                    body
+                }
+            );
+
 
         const dadosTikTok =
             await respostaToken.json();
+
 
         if (
             !respostaToken.ok ||
             dadosTikTok.error
         ) {
+
             console.error(
                 "Erro ao trocar code por token:",
                 JSON.stringify(
@@ -85,29 +164,96 @@ export default async function handler(req, res) {
                 )
             );
 
+
             return res.status(400).json({
+
                 sucesso: false,
-                etapa: "troca_token",
+
+                etapa:
+                    "troca_token",
+
                 erro:
                     dadosTikTok.error ||
                     "Erro ao trocar código por token.",
+
                 descricao:
                     dadosTikTok.error_description ||
                     null
+
             });
+
         }
+
+
+        // ======================================
+        // DADOS DOS TOKENS
+        // ======================================
 
         const accessToken =
             dadosTikTok.access_token;
 
-        if (!accessToken) {
+        const refreshToken =
+            dadosTikTok.refresh_token;
+
+        const openId =
+            dadosTikTok.open_id;
+
+        const expiresIn =
+            dadosTikTok.expires_in;
+
+        const refreshExpiresIn =
+            dadosTikTok.refresh_expires_in;
+
+        const scope =
+            dadosTikTok.scope || null;
+
+
+        if (
+            !accessToken ||
+            !refreshToken ||
+            !openId ||
+            !expiresIn
+        ) {
+
             return res.status(400).json({
+
                 sucesso: false,
-                etapa: "troca_token",
+
+                etapa:
+                    "troca_token",
+
                 erro:
-                    "O TikTok não retornou um access token."
+                    "O TikTok não retornou todos os dados necessários para salvar a autorização."
+
             });
+
         }
+
+
+        // ======================================
+        // CALCULAR VALIDADE
+        // ======================================
+
+        const accessExpiresAt =
+            new Date(
+                Date.now() +
+                Number(expiresIn) * 1000
+            );
+
+
+        let refreshExpiresAt = null;
+
+
+        if (refreshExpiresIn) {
+
+            refreshExpiresAt =
+                new Date(
+                    Date.now() +
+                    Number(refreshExpiresIn) * 1000
+                );
+
+        }
+
 
         console.log(
             "TikTok autorizado com sucesso."
@@ -115,22 +261,57 @@ export default async function handler(req, res) {
 
         console.log(
             "Open ID:",
-            dadosTikTok.open_id
+            openId
         );
 
-        const respostaUsuario = await fetch(
-            "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name",
-            {
-                method: "GET",
-                headers: {
-                    Authorization:
-                        `Bearer ${accessToken}`
-                }
-            }
+
+        // ======================================
+        // SALVAR NO NEON
+        // ======================================
+
+        await salvarTokenTikTok({
+
+            openId,
+
+            accessToken,
+
+            refreshToken,
+
+            accessExpiresAt,
+
+            refreshExpiresAt,
+
+            scope
+
+        });
+
+
+        console.log(
+            "Tokens do TikTok salvos no Neon com sucesso."
         );
+
+
+        // ======================================
+        // USER.INFO.BASIC
+        // ======================================
+
+        const respostaUsuario =
+            await fetch(
+                "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name",
+                {
+                    method: "GET",
+
+                    headers: {
+                        Authorization:
+                            `Bearer ${accessToken}`
+                    }
+                }
+            );
+
 
         const dadosUsuario =
             await respostaUsuario.json();
+
 
         if (
             !respostaUsuario.ok ||
@@ -139,6 +320,7 @@ export default async function handler(req, res) {
                 dadosUsuario.error.code !== "ok"
             )
         ) {
+
             console.error(
                 "ERRO COMPLETO USER.INFO.BASIC:",
                 JSON.stringify(
@@ -148,38 +330,60 @@ export default async function handler(req, res) {
                 )
             );
 
+
             return res.status(400).json({
+
                 sucesso: false,
-                etapa: "user.info.basic",
+
+                etapa:
+                    "user.info.basic",
+
                 erro:
                     dadosUsuario.error?.code ||
                     "Erro ao consultar informações do usuário.",
+
                 descricao:
                     dadosUsuario.error?.message ||
                     null,
+
                 resposta_tiktok:
                     dadosUsuario
+
             });
+
         }
+
 
         const usuario =
             dadosUsuario.data?.user || {};
 
-        const respostaCreator = await fetch(
-            "https://open.tiktokapis.com/v2/post/publish/creator_info/query/",
-            {
-                method: "POST",
-                headers: {
-                    Authorization:
-                        `Bearer ${accessToken}`,
-                    "Content-Type":
-                        "application/json"
+
+        // ======================================
+        // CREATOR INFO
+        // ======================================
+
+        const respostaCreator =
+            await fetch(
+                "https://open.tiktokapis.com/v2/post/publish/creator_info/query/",
+                {
+                    method: "POST",
+
+                    headers: {
+
+                        Authorization:
+                            `Bearer ${accessToken}`,
+
+                        "Content-Type":
+                            "application/json"
+
+                    }
                 }
-            }
-        );
+            );
+
 
         const dadosCreator =
             await respostaCreator.json();
+
 
         if (
             !respostaCreator.ok ||
@@ -188,6 +392,7 @@ export default async function handler(req, res) {
                 dadosCreator.error.code !== "ok"
             )
         ) {
+
             console.error(
                 "Erro no creator_info:",
                 JSON.stringify(
@@ -197,56 +402,96 @@ export default async function handler(req, res) {
                 )
             );
 
+
             return res.status(400).json({
+
                 sucesso: false,
-                etapa: "creator_info",
+
+                etapa:
+                    "creator_info",
+
                 erro:
                     dadosCreator.error?.code ||
                     "Erro ao consultar informações do criador.",
+
                 descricao:
                     dadosCreator.error?.message ||
                     null,
+
                 resposta_tiktok:
                     dadosCreator
+
             });
+
         }
 
-        const respostaVideoInit = await fetch(
-            "https://open.tiktokapis.com/v2/post/publish/video/init/",
-            {
-                method: "POST",
-                headers: {
-                    Authorization:
-                        `Bearer ${accessToken}`,
-                    "Content-Type":
-                        "application/json; charset=UTF-8"
-                },
-                body: JSON.stringify({
-                    post_info: {
-                        title:
-                            "Teste TV Grande Mídia",
-                        privacy_level:
-                            "SELF_ONLY",
-                        disable_duet: false,
-                        disable_comment: false,
-                        disable_stitch: false
+
+        // ======================================
+        // VIDEO INIT
+        // ======================================
+
+        const respostaVideoInit =
+            await fetch(
+                "https://open.tiktokapis.com/v2/post/publish/video/init/",
+                {
+                    method: "POST",
+
+                    headers: {
+
+                        Authorization:
+                            `Bearer ${accessToken}`,
+
+                        "Content-Type":
+                            "application/json; charset=UTF-8"
+
                     },
-                    source_info: {
-                        source:
-                            "FILE_UPLOAD",
-                        video_size:
-                            1000000,
-                        chunk_size:
-                            1000000,
-                        total_chunk_count:
-                            1
-                    }
-                })
-            }
-        );
+
+                    body: JSON.stringify({
+
+                        post_info: {
+
+                            title:
+                                "Teste TV Grande Mídia",
+
+                            privacy_level:
+                                "SELF_ONLY",
+
+                            disable_duet:
+                                false,
+
+                            disable_comment:
+                                false,
+
+                            disable_stitch:
+                                false
+
+                        },
+
+                        source_info: {
+
+                            source:
+                                "FILE_UPLOAD",
+
+                            video_size:
+                                1000000,
+
+                            chunk_size:
+                                1000000,
+
+                            total_chunk_count:
+                                1
+
+                        }
+
+                    })
+
+                }
+            );
+
 
         const dadosVideoInit =
             await respostaVideoInit.json();
+
 
         if (
             !respostaVideoInit.ok ||
@@ -255,6 +500,7 @@ export default async function handler(req, res) {
                 dadosVideoInit.error.code !== "ok"
             )
         ) {
+
             console.error(
                 "ERRO COMPLETO VIDEO.INIT:",
                 JSON.stringify(
@@ -264,38 +510,61 @@ export default async function handler(req, res) {
                 )
             );
 
+
             return res.status(400).json({
+
                 sucesso: false,
-                etapa: "video.init",
+
+                etapa:
+                    "video.init",
+
                 erro:
                     dadosVideoInit.error?.code ||
                     "Erro ao iniciar publicação do vídeo.",
+
                 descricao:
                     dadosVideoInit.error?.message ||
                     null,
+
                 resposta_tiktok:
                     dadosVideoInit
+
             });
+
         }
 
+
+        // ======================================
+        // RESPOSTA FINAL
+        // ======================================
+
         return res.status(200).json({
+
             sucesso: true,
 
             mensagem:
-                "TikTok autorizado e video/init executado com sucesso.",
+                "TikTok autorizado, tokens salvos no Neon e video/init executado com sucesso.",
+
 
             autorizacao: {
-                open_id:
-                    dadosTikTok.open_id,
 
-                token_recebido:
+                open_id:
+                    openId,
+
+                token_salvo_no_banco:
                     true,
 
                 expires_in:
-                    dadosTikTok.expires_in
+                    expiresIn,
+
+                refresh_expires_in:
+                    refreshExpiresIn || null
+
             },
 
+
             usuario: {
+
                 open_id:
                     usuario.open_id || null,
 
@@ -307,33 +576,51 @@ export default async function handler(req, res) {
 
                 avatar_url:
                     usuario.avatar_url || null
+
             },
+
 
             creator_info:
                 dadosCreator.data || null,
 
+
             video_init: {
+
                 publish_id:
                     dadosVideoInit.data?.publish_id || null,
 
                 upload_url_recebido:
                     !!dadosVideoInit.data?.upload_url
+
             }
+
         });
 
+
     } catch (erro) {
+
         console.error(
             "Erro no callback TikTok:",
             erro
         );
 
+
         return res.status(500).json({
+
             sucesso: false,
-            etapa: "callback",
+
+            etapa:
+                "callback",
+
             erro:
                 "Erro interno no callback do TikTok.",
+
             descricao:
                 erro.message
+
         });
+
     }
+
 }
+
