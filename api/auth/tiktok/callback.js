@@ -1,6 +1,6 @@
 import {
     salvarTokenTikTok
-} from "../../../src/tiktok/banco.js";
+} from "./banco.js";
 
 
 export default async function handler(req, res) {
