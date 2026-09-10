@@ -164,7 +164,6 @@ export default async function handler(req, res) {
                 descricao:
                     dadosUsuario.error?.message ||
                     null,
-
                 resposta_tiktok:
                     dadosUsuario
             });
@@ -175,16 +174,6 @@ export default async function handler(req, res) {
 
         console.log(
             "user.info.basic consultado com sucesso."
-        );
-
-        console.log(
-            "Display Name:",
-            usuario.display_name
-        );
-
-        console.log(
-            "Open ID:",
-            usuario.open_id
         );
 
         // ==========================================
@@ -232,32 +221,14 @@ export default async function handler(req, res) {
                 descricao:
                     dadosCreator.error?.message ||
                     null,
-
                 resposta_tiktok:
                     dadosCreator
             });
         }
 
-        console.log(
-            "creator_info consultado com sucesso."
-        );
-
-        console.log(
-            "Creator info:",
-            JSON.stringify(
-                dadosCreator.data,
-                null,
-                2
-            )
-        );
-
         // ==========================================
-        // 4. TESTE VIDEO INIT
+        // 4. VIDEO INIT
         // ==========================================
-
-        console.log(
-            "Iniciando teste video/init..."
-        );
 
         const respostaVideoInit = await fetch(
             "https://open.tiktokapis.com/v2/post/publish/video/init/",
@@ -325,17 +296,13 @@ export default async function handler(req, res) {
 
             return res.status(400).json({
                 sucesso: false,
-
                 etapa: "video.init",
-
                 erro:
                     dadosVideoInit.error?.code ||
                     "Erro ao iniciar publicação do vídeo.",
-
                 descricao:
                     dadosVideoInit.error?.message ||
                     null,
-
                 resposta_tiktok:
                     dadosVideoInit
             });
@@ -345,34 +312,29 @@ export default async function handler(req, res) {
             "video/init executado com sucesso."
         );
 
-        console.log(
-            "Resposta video/init:",
-            JSON.stringify(
-                dadosVideoInit,
-                null,
-                2
-            )
-        );
-
         // ==========================================
-        // 5. RESPOSTA FINAL
+        // 5. RESPOSTA PARA TESTE LOCAL
         // ==========================================
 
         return res.status(200).json({
             sucesso: true,
 
             mensagem:
-                "TikTok autorizado, user.info.basic, creator_info e video/init executados com sucesso.",
+                "TikTok autorizado e video/init executado com sucesso.",
 
             autorizacao: {
                 open_id:
                     dadosTikTok.open_id,
 
                 token_recebido:
-                    !!dadosTikTok.access_token,
+                    true,
 
                 expires_in:
-                    dadosTikTok.expires_in
+                    dadosTikTok.expires_in,
+
+                // TEMPORÁRIO PARA TESTE LOCAL
+                access_token:
+                    accessToken
             },
 
             usuario: {
@@ -392,8 +354,13 @@ export default async function handler(req, res) {
             creator_info:
                 dadosCreator.data || null,
 
-            video_init:
-                dadosVideoInit.data || null
+            video_init: {
+                publish_id:
+                    dadosVideoInit.data?.publish_id || null,
+
+                upload_url_recebido:
+                    !!dadosVideoInit.data?.upload_url
+            }
         });
 
     } catch (erro) {
@@ -404,12 +371,9 @@ export default async function handler(req, res) {
 
         return res.status(500).json({
             sucesso: false,
-
             etapa: "callback",
-
             erro:
                 "Erro interno no callback do TikTok.",
-
             descricao:
                 erro.message
         });
