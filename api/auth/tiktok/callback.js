@@ -7,10 +7,6 @@ export default async function handler(req, res) {
             error_description
         } = req.query;
 
-        // ======================================
-        // 1. VERIFICAR ERRO DO TIKTOK
-        // ======================================
-
         if (error) {
             return res.status(400).json({
                 sucesso: false,
@@ -21,10 +17,6 @@ export default async function handler(req, res) {
             });
         }
 
-        // ======================================
-        // 2. VERIFICAR CODE
-        // ======================================
-
         if (!code) {
             return res.status(400).json({
                 sucesso: false,
@@ -32,20 +24,12 @@ export default async function handler(req, res) {
             });
         }
 
-        // ======================================
-        // 3. VERIFICAR STATE
-        // ======================================
-
         if (state !== "tvgrandemidia") {
             return res.status(400).json({
                 sucesso: false,
                 erro: "State inválido."
             });
         }
-
-        // ======================================
-        // 4. PEGAR CREDENCIAIS
-        // ======================================
 
         const clientKey =
             process.env.TIKTOK_CLIENT_KEY;
@@ -61,16 +45,12 @@ export default async function handler(req, res) {
             });
         }
 
-        // ======================================
-        // 5. REDIRECT URI
-        // ======================================
-
         const redirectUri =
             "https://tvgrandemidia.vercel.app/api/auth/tiktok/callback";
 
-        // ======================================
-        // 6. TROCAR CODE POR ACCESS TOKEN
-        // ======================================
+        // ==========================================
+        // TROCA DO CODE POR ACCESS TOKEN
+        // ==========================================
 
         const body = new URLSearchParams({
             client_key: clientKey,
@@ -101,7 +81,11 @@ export default async function handler(req, res) {
         ) {
             console.error(
                 "Erro ao trocar code por token:",
-                dadosTikTok
+                JSON.stringify(
+                    dadosTikTok,
+                    null,
+                    2
+                )
             );
 
             return res.status(400).json({
@@ -115,10 +99,6 @@ export default async function handler(req, res) {
                     null
             });
         }
-
-        // ======================================
-        // 7. VERIFICAR SE TOKEN FOI RECEBIDO
-        // ======================================
 
         const accessToken =
             dadosTikTok.access_token;
@@ -141,9 +121,9 @@ export default async function handler(req, res) {
             dadosTikTok.open_id
         );
 
-        // ======================================
-        // 8. CONSULTAR USER.INFO.BASIC
-        // ======================================
+        // ==========================================
+        // USER.INFO.BASIC
+        // ==========================================
 
         const respostaUsuario = await fetch(
             "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name",
@@ -159,10 +139,6 @@ export default async function handler(req, res) {
         const dadosUsuario =
             await respostaUsuario.json();
 
-        // ======================================
-        // 9. VERIFICAR RESPOSTA DO USER.INFO
-        // ======================================
-
         if (
             !respostaUsuario.ok ||
             (
@@ -171,8 +147,12 @@ export default async function handler(req, res) {
             )
         ) {
             console.error(
-                "Erro no user.info.basic:",
-                dadosUsuario
+                "ERRO COMPLETO USER.INFO.BASIC:",
+                JSON.stringify(
+                    dadosUsuario,
+                    null,
+                    2
+                )
             );
 
             return res.status(400).json({
@@ -183,13 +163,12 @@ export default async function handler(req, res) {
                     "Erro ao consultar informações do usuário.",
                 descricao:
                     dadosUsuario.error?.message ||
-                    null
+                    null,
+
+                resposta_tiktok:
+                    dadosUsuario
             });
         }
-
-        // ======================================
-        // 10. PEGAR DADOS DO USUÁRIO
-        // ======================================
 
         const usuario =
             dadosUsuario.data?.user || {};
@@ -208,9 +187,9 @@ export default async function handler(req, res) {
             usuario.open_id
         );
 
-        // ======================================
-        // 11. CONSULTAR CREATOR INFO
-        // ======================================
+        // ==========================================
+        // CREATOR INFO
+        // ==========================================
 
         const respostaCreator = await fetch(
             "https://open.tiktokapis.com/v2/post/publish/creator_info/query/",
@@ -228,10 +207,6 @@ export default async function handler(req, res) {
         const dadosCreator =
             await respostaCreator.json();
 
-        // ======================================
-        // 12. VERIFICAR RESPOSTA DO CREATOR INFO
-        // ======================================
-
         if (
             !respostaCreator.ok ||
             (
@@ -241,7 +216,11 @@ export default async function handler(req, res) {
         ) {
             console.error(
                 "Erro no creator_info:",
-                dadosCreator
+                JSON.stringify(
+                    dadosCreator,
+                    null,
+                    2
+                )
             );
 
             return res.status(400).json({
@@ -252,7 +231,10 @@ export default async function handler(req, res) {
                     "Erro ao consultar informações do criador.",
                 descricao:
                     dadosCreator.error?.message ||
-                    null
+                    null,
+
+                resposta_tiktok:
+                    dadosCreator
             });
         }
 
@@ -260,13 +242,18 @@ export default async function handler(req, res) {
             "creator_info consultado com sucesso."
         );
 
-        // ======================================
-        // 13. RETORNO DO TESTE
-        // ======================================
-        //
-        // IMPORTANTE:
-        // O access_token NÃO é retornado.
-        //
+        console.log(
+            "Creator info:",
+            JSON.stringify(
+                dadosCreator.data,
+                null,
+                2
+            )
+        );
+
+        // ==========================================
+        // RESPOSTA FINAL
+        // ==========================================
 
         return res.status(200).json({
             sucesso: true,
