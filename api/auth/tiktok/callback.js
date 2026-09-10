@@ -20,7 +20,8 @@ export default async function handler(req, res) {
         if (!code) {
             return res.status(400).json({
                 sucesso: false,
-                erro: "Código de autorização não recebido."
+                erro:
+                    "Código de autorização não recebido."
             });
         }
 
@@ -47,10 +48,6 @@ export default async function handler(req, res) {
 
         const redirectUri =
             "https://tvgrandemidia.vercel.app/api/auth/tiktok/callback";
-
-        // ==========================================
-        // 1. TROCA DO CODE POR ACCESS TOKEN
-        // ==========================================
 
         const body = new URLSearchParams({
             client_key: clientKey,
@@ -121,10 +118,6 @@ export default async function handler(req, res) {
             dadosTikTok.open_id
         );
 
-        // ==========================================
-        // 2. USER.INFO.BASIC
-        // ==========================================
-
         const respostaUsuario = await fetch(
             "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name",
             {
@@ -172,14 +165,6 @@ export default async function handler(req, res) {
         const usuario =
             dadosUsuario.data?.user || {};
 
-        console.log(
-            "user.info.basic consultado com sucesso."
-        );
-
-        // ==========================================
-        // 3. CREATOR INFO
-        // ==========================================
-
         const respostaCreator = await fetch(
             "https://open.tiktokapis.com/v2/post/publish/creator_info/query/",
             {
@@ -226,48 +211,33 @@ export default async function handler(req, res) {
             });
         }
 
-        // ==========================================
-        // 4. VIDEO INIT
-        // ==========================================
-
         const respostaVideoInit = await fetch(
             "https://open.tiktokapis.com/v2/post/publish/video/init/",
             {
                 method: "POST",
-
                 headers: {
                     Authorization:
                         `Bearer ${accessToken}`,
-
                     "Content-Type":
                         "application/json; charset=UTF-8"
                 },
-
                 body: JSON.stringify({
                     post_info: {
                         title:
                             "Teste TV Grande Mídia",
-
                         privacy_level:
                             "SELF_ONLY",
-
                         disable_duet: false,
-
                         disable_comment: false,
-
                         disable_stitch: false
                     },
-
                     source_info: {
                         source:
                             "FILE_UPLOAD",
-
                         video_size:
                             1000000,
-
                         chunk_size:
                             1000000,
-
                         total_chunk_count:
                             1
                     }
@@ -308,14 +278,6 @@ export default async function handler(req, res) {
             });
         }
 
-        console.log(
-            "video/init executado com sucesso."
-        );
-
-        // ==========================================
-        // 5. RESPOSTA PARA TESTE LOCAL
-        // ==========================================
-
         return res.status(200).json({
             sucesso: true,
 
@@ -330,11 +292,7 @@ export default async function handler(req, res) {
                     true,
 
                 expires_in:
-                    dadosTikTok.expires_in,
-
-                // TEMPORÁRIO PARA TESTE LOCAL
-                access_token:
-                    accessToken
+                    dadosTikTok.expires_in
             },
 
             usuario: {
