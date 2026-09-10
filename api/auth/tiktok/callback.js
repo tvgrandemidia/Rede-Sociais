@@ -209,7 +209,59 @@ export default async function handler(req, res) {
         );
 
         // ======================================
-        // 11. RETORNO DO TESTE
+        // 11. CONSULTAR CREATOR INFO
+        // ======================================
+
+        const respostaCreator = await fetch(
+            "https://open.tiktokapis.com/v2/post/publish/creator_info/query/",
+            {
+                method: "POST",
+                headers: {
+                    Authorization:
+                        `Bearer ${accessToken}`,
+                    "Content-Type":
+                        "application/json"
+                }
+            }
+        );
+
+        const dadosCreator =
+            await respostaCreator.json();
+
+        // ======================================
+        // 12. VERIFICAR RESPOSTA DO CREATOR INFO
+        // ======================================
+
+        if (
+            !respostaCreator.ok ||
+            (
+                dadosCreator.error?.code &&
+                dadosCreator.error.code !== "ok"
+            )
+        ) {
+            console.error(
+                "Erro no creator_info:",
+                dadosCreator
+            );
+
+            return res.status(400).json({
+                sucesso: false,
+                etapa: "creator_info",
+                erro:
+                    dadosCreator.error?.code ||
+                    "Erro ao consultar informações do criador.",
+                descricao:
+                    dadosCreator.error?.message ||
+                    null
+            });
+        }
+
+        console.log(
+            "creator_info consultado com sucesso."
+        );
+
+        // ======================================
+        // 13. RETORNO DO TESTE
         // ======================================
         //
         // IMPORTANTE:
@@ -220,12 +272,15 @@ export default async function handler(req, res) {
             sucesso: true,
 
             mensagem:
-                "TikTok autorizado e user.info.basic consultado com sucesso.",
+                "TikTok autorizado, user.info.basic e creator_info consultados com sucesso.",
 
             autorizacao: {
-                open_id: dadosTikTok.open_id,
+                open_id:
+                    dadosTikTok.open_id,
+
                 token_recebido:
                     !!dadosTikTok.access_token,
+
                 expires_in:
                     dadosTikTok.expires_in
             },
@@ -242,7 +297,10 @@ export default async function handler(req, res) {
 
                 avatar_url:
                     usuario.avatar_url || null
-            }
+            },
+
+            creator_info:
+                dadosCreator.data || null
         });
 
     } catch (erro) {
@@ -261,4 +319,3 @@ export default async function handler(req, res) {
         });
     }
 }
-
