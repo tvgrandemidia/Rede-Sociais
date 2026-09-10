@@ -165,7 +165,10 @@ export default async function handler(req, res) {
 
         if (
             !respostaUsuario.ok ||
-            dadosUsuario.error?.code
+            (
+                dadosUsuario.error?.code &&
+                dadosUsuario.error.code !== "ok"
+            )
         ) {
             console.error(
                 "Erro no user.info.basic:",
@@ -258,3 +261,4 @@ export default async function handler(req, res) {
         });
     }
 }
+
